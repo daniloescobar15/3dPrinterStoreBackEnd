@@ -26,7 +26,7 @@ public class ProcessPaymentUseCase {
     private final PuntoRedProperties puntoRedProperties;
 
     public ProcessPaymentResponse execute(ProcessPaymentRequest request, String userId) {
-        log.info("Iniciando procesamiento de pago. ExternalId: {}, Amount: {}, UserId: {}",
+        log.info("Starting payment processing. ExternalId: {}, Amount: {}, UserId: {}",
                 request.getExternalId(), request.getAmount(), userId);
         
         String token = authenticationService.getAuthenticationToken(
@@ -34,7 +34,7 @@ public class ProcessPaymentUseCase {
                 puntoRedProperties.getPassword()
         );
         
-        log.info("Token obtenido exitosamente. Primeros 50 caracteres: {}...", 
+        log.info("Token obtained successfully. First 50 characters: {}...", 
                 token.length() > 50 ? token.substring(0, 50) : token);
         
         PaymentRequestDto paymentRequestDto = new PaymentRequestDto(
@@ -48,7 +48,7 @@ public class ProcessPaymentUseCase {
         PaymentResponseDto response = paymentGateway.processPayment(paymentRequestDto, token);
         
         if (response != null && response.getResponseCode() == 201) {
-            log.info("Pago procesado exitosamente. PaymentId: {}, Reference: {}", 
+            log.info("Payment processed successfully. PaymentId: {}, Reference: {}", 
                     response.getData().getPaymentId(), 
                     response.getData().getReference());
             
@@ -65,7 +65,7 @@ public class ProcessPaymentUseCase {
                     .build();
             
             paymentRepository.save(payment);
-            log.info("Pago guardado en la base de datos. PaymentId: {}", payment.getId());
+            log.info("Payment saved in database. PaymentId: {}", payment.getId());
             
             return mapToProcessPaymentResponse(response);
         } else {
@@ -75,17 +75,17 @@ public class ProcessPaymentUseCase {
                     .amount(BigDecimal.valueOf(request.getAmount()))
                     .description(request.getDescription())
                     .responseCode(response != null ? response.getResponseCode() : null)
-                    .responseMessage(response != null ? response.getResponseMessage() : "Respuesta nula")
+                    .responseMessage(response != null ? response.getResponseMessage() : "Null response")
                     .status(response != null && response.getData() != null ? response.getData().getStatus() : "FAILED")
                     .build();
             
             paymentRepository.save(payment);
-            log.warn("Pago fallido guardado en la base de datos. Código: {}, Mensaje: {}", 
-                    response != null ? response.getResponseCode() : "desconocido",
-                    response != null ? response.getResponseMessage() : "respuesta nula");
+            log.warn("Failed payment saved in database. Code: {}, Message: {}", 
+                    response != null ? response.getResponseCode() : "unknown",
+                    response != null ? response.getResponseMessage() : "null response");
             
-            throw new RuntimeException("Error al procesar pago: " + 
-                    (response != null ? response.getResponseMessage() : "respuesta nula"));
+            throw new RuntimeException("Error processing payment: " + 
+                    (response != null ? response.getResponseMessage() : "null response"));
         }
     }
 

@@ -20,7 +20,7 @@ server:
   servlet:
     context-path: /api
 
-# Configuración Punto Red
+# Punto Red Configuration
 punto-red:
   webclient:
     url: https://sandbox-v1.portalventas.net
@@ -30,7 +30,7 @@ punto-red:
     readTimeOut: 30
     postProcessingPricingPath: /v1/pricing
 
-# Configuración FusionAuth
+# FusionAuth Configuration
 fusion-auth:
   webclient:
     url: http://158.220.99.85:9011

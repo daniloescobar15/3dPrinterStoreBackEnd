@@ -20,7 +20,7 @@ public class UpdatePaymentCallbackUseCase {
     public void execute(Long paymentId, String externalId, Double amount, 
                        String authorizationNumber, String reference, 
                        Long paymentDate, String status, String message) {
-        log.info("Recibido callback de pago. Reference: {}, ExternalId: {}, PaymentId: {}, Status: {}",
+        log.info("Payment callback received. Reference: {}, ExternalId: {}, PaymentId: {}, Status: {}",
                 reference, externalId, paymentId, status);
         
         Optional<Payment> paymentOptional = paymentRepository.findByReference(reference);
@@ -35,10 +35,10 @@ public class UpdatePaymentCallbackUseCase {
             payment.setResponseCode(200);
             
             paymentRepository.save(payment);
-            log.info("Pago actualizado exitosamente desde callback. PaymentId: {}, Reference: {}, Status: {}",
+            log.info("Payment successfully updated from callback. PaymentId: {}, Reference: {}, Status: {}",
                     payment.getId(), reference, status);
         } else {
-            log.warn("No se encontró pago con reference: {}. Buscando por externalId: {}", 
+            log.warn("Payment not found with reference: {}. Searching by externalId: {}", 
                     reference, externalId);
             
             if (externalId != null && !externalId.isEmpty()) {
@@ -57,14 +57,14 @@ public class UpdatePaymentCallbackUseCase {
                     payment.setResponseCode(200);
                     
                     paymentRepository.save(payment);
-                    log.info("Pago actualizado (búsqueda por externalId) desde callback. PaymentId: {}, Reference: {}, Status: {}",
+                    log.info("Payment updated (search by externalId) from callback. PaymentId: {}, Reference: {}, Status: {}",
                             payment.getId(), reference, status);
                 } else {
-                    log.warn("No se encontró pago con reference: {} ni con externalId: {} para actualizar desde callback",
+                    log.warn("Payment not found with reference: {} or externalId: {} to update from callback",
                             reference, externalId);
                 }
             } else {
-                log.warn("No se encontró pago con reference: {} y externalId es nulo", reference);
+                log.warn("Payment not found with reference: {} and externalId is null", reference);
             }
         }
     }

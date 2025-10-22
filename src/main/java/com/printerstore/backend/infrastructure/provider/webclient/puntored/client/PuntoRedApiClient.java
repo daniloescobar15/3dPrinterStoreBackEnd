@@ -10,28 +10,28 @@ import com.printerstore.backend.infrastructure.provider.webclient.puntored.model
 public interface PuntoRedApiClient {
     
     /**
-     * Autentica con el sistema Punto Red
+     * Authenticates with the Punto Red system
      * 
-     * @param authRequest solicitud con username y password
-     * @return respuesta con token y datos de autenticación
+     * @param authRequest request with username and password
+     * @return response with token and authentication data
      */
     AuthenticationResponse authenticate(AuthenticationRequest authRequest);
     
     /**
-     * Crea un pago en el sistema Punto Red
+     * Creates a payment in the Punto Red system
      * 
-     * @param paymentRequest solicitud de pago
-     * @param token token de autenticación (Authorization header)
-     * @return respuesta con detalles del pago creado
+     * @param paymentRequest payment request
+     * @param token authentication token (Authorization header)
+     * @return response with details of the created payment
      */
     PaymentResponse payment(PaymentRequest paymentRequest, String token);
     
     /**
-     * Cancela un pago en el sistema Punto Red
+     * Cancels a payment in the Punto Red system
      * 
-     * @param cancelPaymentRequest solicitud de cancelación con reference, status y description
-     * @param token token de autenticación (Authorization header)
-     * @return respuesta con detalles de la cancelación
+     * @param cancelPaymentRequest cancellation request with reference, status and description
+     * @param token authentication token (Authorization header)
+     * @return response with cancellation details
      */
     CancelPaymentResponse cancelPayment(CancelPaymentRequest cancelPaymentRequest, String token);
 }

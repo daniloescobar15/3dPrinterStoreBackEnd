@@ -1,7 +1,6 @@
 package com.printerstore.backend.infrastructure.adapter.in.web;
 
 import com.printerstore.backend.configuration.webclient.FusionAuthProperties;
-import com.printerstore.backend.infrastructure.adapter.in.AuthenticationServiceAdapter;
 import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.client.FusionAuthApiClient;
 import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.model.FusionAuthLoginRequest;
 import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.model.FusionAuthLoginResponse;
@@ -15,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * REST Controller para operaciones de autenticación
- * Adapta entrada HTTP al puerto de autenticación del dominio
+ * REST Controller for authentication operations
+ * Adapts HTTP input to the domain's authentication port
  */
 @Slf4j
 @RestController
@@ -27,14 +26,14 @@ public class AuthenticationRestController {
     private final FusionAuthProperties fusionAuthProperties;
 
     /**
-     * Endpoint de login
+     * Login endpoint
      *
-     * @param loginRequest solicitud con usuario y contraseña
-     * @return respuesta con token y datos del usuario
+     * @param loginRequest request with user and password
+     * @return response with token and user data
      */
     @PostMapping("/login")
     public ResponseEntity<FusionAuthLoginResponse>  login(@RequestBody LoginRequest loginRequest) {
-        log.info("Solicitud de login recibida para usuario: {}", loginRequest.getLoginId());
+        log.info("Login request received for user: {}", loginRequest.getLoginId());
         
         try {
             Map<String, Object> metaData = new HashMap<>();
@@ -52,13 +51,13 @@ public class AuthenticationRestController {
             return ResponseEntity.ok(fusionAuthApiClient.login(request));
 
         } catch (Exception e) {
-            log.error("Error en login para usuario: {}", loginRequest.getLoginId(), e);
+            log.error("Error in login for user: {}", loginRequest.getLoginId(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Modelo para la solicitud de login
+     * Model for login request
      */
     @lombok.Data
     @lombok.NoArgsConstructor
@@ -68,23 +67,4 @@ public class AuthenticationRestController {
         private String password;
     }
 
-    /**
-     * Modelo para la respuesta de autenticación
-     */
-    @lombok.Data
-    @lombok.NoArgsConstructor
-    @lombok.AllArgsConstructor
-    public static class AuthenticationResponse {
-        private String token;
-    }
-
-    /**
-     * Modelo para respuesta de error
-     */
-    @lombok.Data
-    @lombok.NoArgsConstructor
-    @lombok.AllArgsConstructor
-    public static class ErrorResponse {
-        private String message;
-    }
 }

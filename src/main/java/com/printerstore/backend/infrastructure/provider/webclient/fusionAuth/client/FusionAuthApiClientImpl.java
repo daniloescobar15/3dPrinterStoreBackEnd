@@ -33,7 +33,7 @@ public class FusionAuthApiClientImpl implements FusionAuthApiClient {
             
             HttpEntity<FusionAuthLoginRequest> request = new HttpEntity<>(loginRequest, headers);
             
-            log.info("Enviando solicitud de login a FusionAuth: {}", url);
+            log.info("Sending login request to FusionAuth: {}", url);
             log.debug("Login ID: {}", loginRequest.getLoginId());
             
             FusionAuthLoginResponse response = restTemplate.postForObject(
@@ -43,7 +43,7 @@ public class FusionAuthApiClientImpl implements FusionAuthApiClient {
             );
             
             if (response != null && response.getToken() != null) {
-                log.info("Login exitoso en FusionAuth. Usuario: {}, ID: {}", 
+                log.info("Login successful in FusionAuth. User: {}, ID: {}", 
                         response.getUser().getUsername(),
                         response.getUser().getId());
             }
@@ -51,8 +51,8 @@ public class FusionAuthApiClientImpl implements FusionAuthApiClient {
             return response;
             
         } catch (Exception e) {
-            log.error("Error al realizar login en FusionAuth", e);
-            throw new RuntimeException("Error de login en FusionAuth: " + e.getMessage(), e);
+            log.error("Error performing login in FusionAuth", e);
+            throw new RuntimeException("Login error in FusionAuth: " + e.getMessage(), e);
         }
     }
 
@@ -60,23 +60,23 @@ public class FusionAuthApiClientImpl implements FusionAuthApiClient {
     public boolean validateToken(String token) {
         try {
             if (token == null || token.isEmpty()) {
-                log.warn("Token vacío o nulo");
+                log.warn("Token empty or null");
                 return false;
             }
 
-            log.debug("Validando token JWT usando JWKS");
+            log.debug("Validating JWT token using JWKS");
             boolean isValid = jwtValidator.validateToken(token);
             
             if (isValid) {
-                log.debug("Token JWT válido");
+                log.debug("JWT token valid");
             } else {
-                log.warn("Token JWT inválido o expirado");
+                log.warn("JWT token invalid or expired");
             }
             
             return isValid;
             
         } catch (Exception e) {
-            log.warn("Error al validar token JWT: {}", e.getMessage());
+            log.warn("Error validating JWT token: {}", e.getMessage());
             return false;
         }
     }
@@ -85,40 +85,40 @@ public class FusionAuthApiClientImpl implements FusionAuthApiClient {
     public String extractUserIdFromToken(String token) {
         try {
             if (token == null || token.isEmpty()) {
-                log.warn("Token vacío o nulo");
+                log.warn("Token empty or null");
                 return null;
             }
 
             var decodedJWT = jwtValidator.getDecodedToken(token);
             if (decodedJWT == null) {
-                log.warn("No se pudo decodificar el token JWT");
+                log.warn("Could not decode JWT token");
                 return null;
             }
 
             String userId = decodedJWT.getSubject();
             if (userId != null && !userId.isEmpty()) {
-                log.debug("UserId extraído del token: {}", userId);
+                log.debug("UserId extracted from token: {}", userId);
                 return userId;
             }
 
             var claims = decodedJWT.getClaims();
             if (claims.containsKey("user_id")) {
                 userId = claims.get("user_id").asString();
-                log.debug("UserId extraído del claim user_id: {}", userId);
+                log.debug("UserId extracted from user_id claim: {}", userId);
                 return userId;
             }
 
             if (claims.containsKey("uid")) {
                 userId = claims.get("uid").asString();
-                log.debug("UserId extraído del claim uid: {}", userId);
+                log.debug("UserId extracted from uid claim: {}", userId);
                 return userId;
             }
 
-            log.warn("No se pudo extraer el userId del token JWT");
+            log.warn("Could not extract userId from JWT token");
             return null;
 
         } catch (Exception e) {
-            log.warn("Error al extraer userId del token JWT: {}", e.getMessage());
+            log.warn("Error extracting userId from JWT token: {}", e.getMessage());
             return null;
         }
     }

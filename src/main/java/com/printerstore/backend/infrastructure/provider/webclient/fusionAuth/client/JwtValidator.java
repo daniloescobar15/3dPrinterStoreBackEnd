@@ -29,7 +29,7 @@ public class JwtValidator {
     }
 
     /**
-     * Valida un token JWT usando las claves públicas del JWKS
+     * Validates a JWT token using the public keys from JWKS
      */
     public boolean validateToken(String token) {
         try {
@@ -37,18 +37,18 @@ public class JwtValidator {
 
             String keyId = decodedJWT.getKeyId();
             if (keyId == null) {
-                log.warn("Token JWT no contiene Key ID (kid)");
+                log.warn("JWT token does not contain Key ID (kid)");
                 return false;
             }
 
             JWK jwk = jwkSet.getKeyByKeyId(keyId);
             if (jwk == null) {
-                log.warn("Clave con ID {} no encontrada en JWKS", keyId);
+                log.warn("Key with ID {} not found in JWKS", keyId);
                 return false;
             }
 
             if (!(jwk instanceof RSAKey)) {
-                log.warn("La clave no es una clave RSA");
+                log.warn("Key is not an RSA key");
                 return false;
             }
 
@@ -60,53 +60,47 @@ public class JwtValidator {
                     .build()
                     .verify(token);
 
-            log.debug("Token JWT validado exitosamente");
+            log.debug("JWT token validated successfully");
             return true;
 
         } catch (JWTVerificationException e) {
-            log.warn("Error al verificar token JWT: {}", e.getMessage());
+            log.warn("Error verifying JWT token: {}", e.getMessage());
             return false;
         } catch (Exception e) {
-            log.error("Error inesperado al validar token JWT", e);
+            log.error("Unexpected error validating JWT token", e);
             return false;
         }
     }
 
     /**
-     * Extrae los claims de un token válido
+     * Extracts the claims from a valid token
      */
     public DecodedJWT getDecodedToken(String token) {
         try {
             return JWT.decode(token);
         } catch (Exception e) {
-            log.warn("Error al decodificar token JWT: {}", e.getMessage());
+            log.warn("Error decoding JWT token: {}", e.getMessage());
             return null;
         }
     }
 
     /**
-     * Carga el JWKS desde el endpoint
+     * Loads the JWKS from the endpoint
      */
     private void loadJwks() {
         try {
-            log.info("Cargando JWKS desde: {}", jwksUrl);
+            log.info("Loading JWKS from: {}", jwksUrl);
             String jwksContent = restTemplate.getForObject(jwksUrl, String.class);
             this.jwkSet = JWKSet.parse(jwksContent);
-            log.info("JWKS cargado exitosamente con {} claves", jwkSet.getKeys().size());
+            log.info("JWKS loaded successfully with {} keys", jwkSet.getKeys().size());
         } catch (Exception e) {
-            log.error("Error al cargar JWKS desde {}: {}", jwksUrl, e.getMessage(), e);
+            log.error("Error loading JWKS from {}: {}", jwksUrl, e.getMessage(), e);
             try {
                 this.jwkSet = new JWKSet();
             } catch (Exception ex) {
-                log.error("Error al crear JWKSet vacío", ex);
+                log.error("Error creating empty JWKSet", ex);
             }
         }
     }
 
-    /**
-     * Recarga el JWKS (útil si necesitas refrescar las claves)
-     */
-    public void reloadJwks() {
-        loadJwks();
-    }
 }

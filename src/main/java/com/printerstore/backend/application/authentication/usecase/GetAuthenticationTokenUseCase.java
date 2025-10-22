@@ -21,28 +21,28 @@ public class GetAuthenticationTokenUseCase {
     private final ConcurrentHashMap<String, String> tokenCache = new ConcurrentHashMap<>();
 
     /**
-     * Autentica un usuario contra el sistema de autenticación
+     * Authenticates a user against the authentication system
      */
     private AuthenticationResponseDto authenticate(String username, String password) {
-        log.info("Iniciando autenticación para usuario: {}", username);
+        log.info("Starting authentication for user: {}", username);
         
         AuthenticationRequestDto request = new AuthenticationRequestDto(username, password);
         AuthenticationResponseDto response = authenticationGateway.authenticate(request);
         
         if (response != null && response.getResponseCode() == 200) {
-            log.info("Autenticación exitosa para usuario: {}", username);
+            log.info("Authentication successful for user: {}", username);
             return response;
         } else {
-            log.warn("Autenticación fallida para usuario: {}. Código: {}", 
+            log.warn("Authentication failed for user: {}. Code: {}", 
                     username, 
-                    response != null ? response.getResponseCode() : "desconocido");
-            throw new RuntimeException("Autenticación fallida: " + 
-                    (response != null ? response.getResponseMessage() : "respuesta nula"));
+                    response != null ? response.getResponseCode() : "unknown");
+            throw new RuntimeException("Authentication failed: " + 
+                    (response != null ? response.getResponseMessage() : "null response"));
         }
     }
 
     /**
-     * Valida si un token en cache sigue siendo válido verificando su fecha de expiración
+     * Validates if a cached token is still valid by checking its expiration date
      */
     private boolean isTokenValid(String token) {
         try {
@@ -50,38 +50,38 @@ public class GetAuthenticationTokenUseCase {
             Instant expiresAt = decodedJWT.getExpiresAtAsInstant();
             
             if (expiresAt == null) {
-                log.warn("Token no tiene fecha de expiración");
+                log.warn("Token does not have an expiration date");
                 return false;
             }
             
             boolean isValid = expiresAt.isAfter(Instant.now());
             if (!isValid) {
-                log.debug("Token ha expirado");
+                log.debug("Token has expired");
             }
             return isValid;
         } catch (Exception e) {
-            log.warn("Error al validar token: {}", e.getMessage());
+            log.warn("Error validating token: {}", e.getMessage());
             return false;
         }
     }
 
     /**
-     * Obtiene el token de autenticación desde cache si es válido, 
-     * sino autentica y lo guarda en cache
+     * Gets the authentication token from cache if valid, 
+     * otherwise authenticates and saves it in cache
      */
     public String execute(String username, String password) {
         String cachedToken = tokenCache.get(username);
         if (cachedToken != null && isTokenValid(cachedToken)) {
-            log.debug("Token obtenido del cache para usuario: {}", username);
+            log.debug("Token retrieved from cache for user: {}", username);
             return cachedToken;
         }
         
-        log.debug("Token no encontrado en cache o expirado. Autenticando usuario: {}", username);
+        log.debug("Token not found in cache or expired. Authenticating user: {}", username);
         AuthenticationResponseDto response = authenticate(username, password);
         String token = response.getData().getToken();
         
         tokenCache.put(username, token);
-        log.debug("Token guardado en cache para usuario: {}", username);
+        log.debug("Token saved in cache for user: {}", username);
         
         return token;
     }

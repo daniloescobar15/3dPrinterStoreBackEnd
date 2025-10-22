@@ -39,7 +39,7 @@ public class PuntoRedApiClientImpl implements PuntoRedApiClient {
             
             HttpEntity<AuthenticationRequest> request = new HttpEntity<>(authRequest, headers);
             
-            log.info("Enviando solicitud de autenticación a: {}", url);
+            log.info("Sending authentication request to: {}", url);
             
             AuthenticationResponse response = restTemplate.postForObject(
                     url,
@@ -47,14 +47,14 @@ public class PuntoRedApiClientImpl implements PuntoRedApiClient {
                     AuthenticationResponse.class
             );
             
-            log.info("Autenticación exitosa. Código de respuesta: {}", 
+            log.info("Authentication successful. Response code: {}", 
                     response != null ? response.getResponseCode() : null);
             
             return response;
             
         } catch (Exception e) {
-            log.error("Error al autenticar con Punto Red", e);
-            throw new RuntimeException("Error de autenticación con Punto Red: " + e.getMessage(), e);
+            log.error("Error authenticating with Punto Red", e);
+            throw new RuntimeException("Authentication error with Punto Red: " + e.getMessage(), e);
         }
     }
 
@@ -70,9 +70,9 @@ public class PuntoRedApiClientImpl implements PuntoRedApiClient {
             
             HttpEntity<PaymentRequest> request = new HttpEntity<>(paymentRequest, headers);
             
-            log.info("Enviando solicitud de pago a: {}. ExternalId: {}, Amount: {}", 
+            log.info("Sending payment request to: {}. ExternalId: {}, Amount: {}", 
                     url, paymentRequest.getExternalId(), paymentRequest.getAmount());
-            log.debug("Header Authorization enviado: {}", authHeader.substring(0, Math.min(50, authHeader.length())) + "...");
+            log.debug("Authorization header sent: {}", authHeader.substring(0, Math.min(50, authHeader.length())) + "...");
             
             PaymentResponse response = restTemplate.postForObject(
                     url,
@@ -80,15 +80,15 @@ public class PuntoRedApiClientImpl implements PuntoRedApiClient {
                     PaymentResponse.class
             );
             
-            log.info("Pago procesado. Código de respuesta: {}, PaymentId: {}", 
+            log.info("Payment processed. Response code: {}, PaymentId: {}", 
                     response != null ? response.getResponseCode() : null,
                     response != null && response.getData() != null ? response.getData().getPaymentId() : null);
             
             return response;
             
         } catch (Exception e) {
-            log.error("Error al procesar pago con Punto Red", e);
-            throw new RuntimeException("Error al procesar pago con Punto Red: " + e.getMessage(), e);
+            log.error("Error processing payment with Punto Red", e);
+            throw new RuntimeException("Error processing payment with Punto Red: " + e.getMessage(), e);
         }
     }
 
@@ -104,9 +104,9 @@ public class PuntoRedApiClientImpl implements PuntoRedApiClient {
             
             HttpEntity<CancelPaymentRequest> request = new HttpEntity<>(cancelPaymentRequest, headers);
             
-            log.info("Enviando solicitud de cancelación a: {}. Reference: {}", 
+            log.info("Sending cancellation request to: {}. Reference: {}", 
                     url, cancelPaymentRequest.getReference());
-            log.debug("Header Authorization enviado: {}", authHeader.substring(0, Math.min(50, authHeader.length())) + "...");
+            log.debug("Authorization header sent: {}", authHeader.substring(0, Math.min(50, authHeader.length())) + "...");
             
             ResponseEntity<CancelPaymentResponse> responseEntity = restTemplate.exchange(
                     url,
@@ -117,15 +117,15 @@ public class PuntoRedApiClientImpl implements PuntoRedApiClient {
             
             CancelPaymentResponse response = responseEntity.getBody();
             
-            log.info("Cancelación procesada. Código de respuesta: {}, PaymentId: {}", 
+            log.info("Cancellation processed. Response code: {}, PaymentId: {}", 
                     response != null ? response.getResponseCode() : null,
                     response != null && response.getData() != null ? response.getData().getPaymentId() : null);
             
             return response;
             
         } catch (Exception e) {
-            log.error("Error al cancelar pago con Punto Red", e);
-            throw new RuntimeException("Error al cancelar pago con Punto Red: " + e.getMessage(), e);
+            log.error("Error canceling payment with Punto Red", e);
+            throw new RuntimeException("Error canceling payment with Punto Red: " + e.getMessage(), e);
         }
     }
 }

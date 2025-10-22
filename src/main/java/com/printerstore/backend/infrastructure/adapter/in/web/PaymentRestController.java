@@ -25,14 +25,14 @@ public class PaymentRestController {
     private final FusionAuthApiClient fusionAuthApiClient;
 
     /**
-     * Endpoint para procesar un pago
+     * Endpoint to process a payment
      */
     @PostMapping("/process")
     public ResponseEntity<?> processPayment(
             @RequestBody ProcessPaymentRequest paymentRequest,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            log.info("Recibida solicitud de pago para externalId: {}", paymentRequest.getExternalId());
+            log.info("Payment request received for externalId: {}", paymentRequest.getExternalId());
             
             String userId = extractAndValidateToken(authHeader, paymentRequest.getExternalId());
             if (userId == null) {
@@ -43,11 +43,11 @@ public class PaymentRestController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
             
         } catch (Exception e) {
-            log.error("Error en procesamiento de pago", e);
+            log.error("Error in payment processing", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ErrorResponse.builder()
                             .responseCode(400)
-                            .responseMessage("Error al procesar el pago")
+                            .responseMessage("Error processing payment")
                             .error(e.getMessage())
                             .timestamp(System.currentTimeMillis())
                             .build());
@@ -55,13 +55,13 @@ public class PaymentRestController {
     }
 
     /**
-     * Endpoint para obtener todos los pagos del usuario autenticado
+     * Endpoint to get all payments of the authenticated user
      */
     @GetMapping("/list")
     public ResponseEntity<?> getUserPayments(
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            log.info("Solicitud para listar pagos del usuario");
+            log.info("Request to list user payments");
             
             String userId = extractAndValidateToken(authHeader, null);
             if (userId == null) {
@@ -69,15 +69,15 @@ public class PaymentRestController {
             }
             
             List<Payment> payments = paymentService.getUserPayments(userId);
-            log.info("Se retornaron {} pagos para userId: {}", payments.size(), userId);
+            log.info("Returned {} payments for userId: {}", payments.size(), userId);
             return ResponseEntity.ok(payments);
             
         } catch (Exception e) {
-            log.error("Error al obtener lista de pagos", e);
+            log.error("Error obtaining payment list", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ErrorResponse.builder()
                             .responseCode(400)
-                            .responseMessage("Error al obtener la lista de pagos")
+                            .responseMessage("Error obtaining payment list")
                             .error(e.getMessage())
                             .timestamp(System.currentTimeMillis())
                             .build());
@@ -85,14 +85,14 @@ public class PaymentRestController {
     }
 
     /**
-     * Endpoint para cancelar un pago
+     * Endpoint to cancel a payment
      */
     @PostMapping("/cancel")
     public ResponseEntity<?> cancelPayment(
             @RequestBody CancelPaymentRequest cancelPaymentRequest,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            log.info("Recibida solicitud de cancelación de pago para reference: {}", cancelPaymentRequest.getReference());
+            log.info("Payment cancellation request received for reference: {}", cancelPaymentRequest.getReference());
             
             String userId = extractAndValidateToken(authHeader, null);
             if (userId == null) {
@@ -103,11 +103,11 @@ public class PaymentRestController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
             
         } catch (Exception e) {
-            log.error("Error en cancelación de pago", e);
+            log.error("Error in payment cancellation", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ErrorResponse.builder()
                             .responseCode(400)
-                            .responseMessage("Error al cancelar el pago")
+                            .responseMessage("Error canceling payment")
                             .error(e.getMessage())
                             .timestamp(System.currentTimeMillis())
                             .build());
@@ -115,13 +115,13 @@ public class PaymentRestController {
     }
 
     /**
-     * Endpoint callback para recibir actualizaciones de estado de pagos desde Punto Red
-     * No requiere autenticación JWT
+     * Callback endpoint to receive payment status updates from Punto Red
+     * Does not require JWT authentication
      */
     @PostMapping("/callback")
     public ResponseEntity<?> paymentCallback(@RequestBody PaymentCallbackRequest callbackRequest) {
         try {
-            log.info("Recibido callback de pago. Reference: {}, ExternalId: {}, PaymentId: {}, Status: {}",
+            log.info("Payment callback received. Reference: {}, ExternalId: {}, PaymentId: {}, Status: {}",
                     callbackRequest.getReference(), callbackRequest.getExternalId(), 
                     callbackRequest.getPaymentId(), callbackRequest.getStatus());
             
@@ -136,15 +136,15 @@ public class PaymentRestController {
                     callbackRequest.getMessage()
             );
             
-            log.info("Callback procesado exitosamente. Reference: {}", callbackRequest.getReference());
+            log.info("Callback processed successfully. Reference: {}", callbackRequest.getReference());
             return ResponseEntity.ok().build();
             
         } catch (Exception e) {
-            log.error("Error al procesar callback de pago", e);
+            log.error("Error processing payment callback", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ErrorResponse.builder()
                             .responseCode(400)
-                            .responseMessage("Error al procesar el callback")
+                            .responseMessage("Error processing callback")
                             .error(e.getMessage())
                             .timestamp(System.currentTimeMillis())
                             .build());
@@ -153,24 +153,24 @@ public class PaymentRestController {
 
     private String extractAndValidateToken(String authHeader, String externalId) {
         if (authHeader == null || authHeader.isEmpty()) {
-            log.warn("Solicitud sin header Authorization");
+            log.warn("Request without Authorization header");
             return null;
         }
         
         String token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
         
         if (!fusionAuthApiClient.validateToken(token)) {
-            log.warn("Token inválido");
+            log.warn("Invalid token");
             return null;
         }
         
         String userId = fusionAuthApiClient.extractUserIdFromToken(token);
         if (userId == null || userId.isEmpty()) {
-            log.warn("No se pudo extraer el userId del token");
+            log.warn("Could not extract userId from token");
             return null;
         }
         
-        log.info("Token validado exitosamente para userId: {}", userId);
+        log.info("Token validated successfully for userId: {}", userId);
         return userId;
     }
 
@@ -178,8 +178,8 @@ public class PaymentRestController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse.builder()
                         .responseCode(401)
-                        .responseMessage("Autenticación requerida")
-                        .error("Token requerido o inválido")
+                        .responseMessage("Authentication required")
+                        .error("Token required or invalid")
                         .timestamp(System.currentTimeMillis())
                         .build());
     }

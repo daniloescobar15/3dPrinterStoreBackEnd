@@ -6,26 +6,26 @@ import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.mod
 public interface FusionAuthApiClient {
     
     /**
-     * Realiza login en FusionAuth
+     * Performs login in FusionAuth
      * 
-     * @param loginRequest solicitud con loginId y password
-     * @return respuesta con token y datos del usuario
+     * @param loginRequest request with loginId and password
+     * @return response with token and user data
      */
     FusionAuthLoginResponse login(FusionAuthLoginRequest loginRequest);
 
     /**
-     * Valida un token JWT en FusionAuth
+     * Validates a JWT token in FusionAuth
      *
-     * @param token el token JWT a validar
-     * @return true si el token es válido, false en caso contrario
+     * @param token the JWT token to validate
+     * @return true if the token is valid, false otherwise
      */
     boolean validateToken(String token);
 
     /**
-     * Extrae el userId del token JWT
+     * Extracts the userId from the JWT token
      *
-     * @param token el token JWT
-     * @return el userId del token, o null si no puede extraerse
+     * @param token the JWT token
+     * @return the userId from the token, or null if it cannot be extracted
      */
     String extractUserIdFromToken(String token);
 

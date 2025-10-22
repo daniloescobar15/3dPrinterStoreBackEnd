@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO para recibir el callback de actualización de pagos desde Punto Red
+ * DTO to receive payment update callback from Punto Red
  */
 @Data
 @NoArgsConstructor

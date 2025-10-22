@@ -25,25 +25,25 @@ public class CancelPaymentUseCase {
     private final PuntoRedProperties puntoRedProperties;
 
     public CancelPaymentResponse execute(String reference, String cancelDescription) {
-        log.info("Iniciando cancelación de pago. Reference: {}", reference);
+        log.info("Starting payment cancellation. Reference: {}", reference);
         
         String token = authenticationService.getAuthenticationToken(
                 puntoRedProperties.getUsername(),
                 puntoRedProperties.getPassword()
         );
         
-        log.info("Token obtenido exitosamente para cancelación. Primeros 50 caracteres: {}...", 
+        log.info("Token obtained successfully for cancellation. First 50 characters: {}...", 
                 token.length() > 50 ? token.substring(0, 50) : token);
         
         CancelPaymentRequestDto cancelRequest = new CancelPaymentRequestDto();
         cancelRequest.setReference(reference);
-        cancelRequest.setStatus("03"); // Status para cancelado
+        cancelRequest.setStatus("03"); // Status for cancelled
         cancelRequest.setUpdateDescription(cancelDescription);
         
         CancelPaymentResponseDto response = paymentGateway.cancelPayment(cancelRequest, token);
         
         if (response != null && response.getResponseCode() == 202) {
-            log.info("Pago cancelado exitosamente. PaymentId: {}, Reference: {}", 
+            log.info("Payment cancelled successfully. PaymentId: {}, Reference: {}", 
                     response.getData().getPaymentId(), 
                     response.getData().getReference());
             
@@ -54,14 +54,14 @@ public class CancelPaymentUseCase {
                 payment.setResponseCode(response.getResponseCode());
                 payment.setResponseMessage(response.getResponseMessage());
                 paymentRepository.save(payment);
-                log.info("Pago actualizado en la base de datos. PaymentId: {}", payment.getId());
+                log.info("Payment updated in database. PaymentId: {}", payment.getId());
             } else {
-                log.warn("No se encontró pago con reference: {} para actualizar estado de cancelación", reference);
+                log.warn("Payment not found with reference: {} to update cancellation status", reference);
             }
             
             return mapToCancelPaymentResponse(response);
         } else if (response != null && response.getResponseCode() == 409) {
-            log.warn("Error al cancelar pago. Código: {}, Mensaje: {}", 
+            log.warn("Error cancelling payment. Code: {}, Message: {}", 
                     response.getResponseCode(), response.getResponseMessage());
             
             Optional<Payment> paymentOptional = paymentRepository.findByReference(reference);
@@ -70,16 +70,16 @@ public class CancelPaymentUseCase {
                 payment.setResponseCode(response.getResponseCode());
                 payment.setResponseMessage(response.getResponseMessage());
                 paymentRepository.save(payment);
-                log.info("Pago actualizado con estado de error. PaymentId: {}", payment.getId());
+                log.info("Payment updated with error status. PaymentId: {}", payment.getId());
             }
             
-            throw new RuntimeException("Error al cancelar pago: " + response.getResponseMessage());
+            throw new RuntimeException("Error cancelling payment: " + response.getResponseMessage());
         } else {
-            log.error("Respuesta inesperada al cancelar pago. Código: {}", 
-                    response != null ? response.getResponseCode() : "desconocido");
+            log.error("Unexpected response when cancelling payment. Code: {}", 
+                    response != null ? response.getResponseCode() : "unknown");
             
-            throw new RuntimeException("Error inesperado al cancelar pago: " + 
-                    (response != null ? response.getResponseMessage() : "respuesta nula"));
+            throw new RuntimeException("Unexpected error cancelling payment: " + 
+                    (response != null ? response.getResponseMessage() : "null response"));
         }
     }
 
