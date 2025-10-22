@@ -1,12 +1,18 @@
 package com.printerstore.backend.infrastructure.adapter.in.web;
 
+import com.printerstore.backend.configuration.webclient.FusionAuthProperties;
 import com.printerstore.backend.infrastructure.adapter.in.AuthenticationServiceAdapter;
+import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.client.FusionAuthApiClient;
+import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.model.FusionAuthLoginRequest;
 import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.model.FusionAuthLoginResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * REST Controller para operaciones de autenticación
@@ -15,34 +21,39 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
 public class AuthenticationRestController {
 
-    private final AuthenticationServiceAdapter authenticationServiceAdapter;
+    private final FusionAuthApiClient fusionAuthApiClient;
+    private final FusionAuthProperties fusionAuthProperties;
 
     /**
      * Endpoint de login
-     * 
+     *
      * @param loginRequest solicitud con usuario y contraseña
      * @return respuesta con token y datos del usuario
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<FusionAuthLoginResponse>  login(@RequestBody LoginRequest loginRequest) {
         log.info("Solicitud de login recibida para usuario: {}", loginRequest.getLoginId());
         
         try {
-            String token = authenticationServiceAdapter.getAuthenticationToken(
-                    loginRequest.getLoginId(),
-                    loginRequest.getPassword()
-            );
-            
-            // Retornar el token en la respuesta
-            return ResponseEntity.ok(new AuthenticationResponse(token));
-            
+            Map<String, Object> metaData = new HashMap<>();
+            Map<String, String> device = new HashMap<>();
+            device.put("description", "web");
+            metaData.put("device", device);
+
+            FusionAuthLoginRequest request = FusionAuthLoginRequest.builder()
+                    .applicationId(fusionAuthProperties.getApplicationId())
+                    .loginId(loginRequest.getLoginId())
+                    .password(loginRequest.password)
+                    .metaData(metaData)
+                    .build();
+
+            return ResponseEntity.ok(fusionAuthApiClient.login(request));
+
         } catch (Exception e) {
             log.error("Error en login para usuario: {}", loginRequest.getLoginId(), e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse("Credenciales inválidas"));
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -3,6 +3,7 @@ package com.printerstore.backend.infrastructure.adapter.in.web;
 import com.printerstore.backend.application.payment.port.PaymentServicePort;
 import com.printerstore.backend.application.payment.dto.ProcessPaymentRequest;
 import com.printerstore.backend.infrastructure.provider.webclient.fusionAuth.client.FusionAuthApiClient;
+import com.printerstore.backend.infrastructure.provider.webclient.puntored.model.CancelPaymentRequest;
 import com.printerstore.backend.infrastructure.provider.webclient.puntored.model.PaymentCallbackRequest;
 import com.printerstore.backend.infrastructure.adapter.in.web.dto.ErrorResponse;
 import com.printerstore.backend.domain.payment.entity.Payment;
@@ -88,18 +89,17 @@ public class PaymentRestController {
      */
     @PostMapping("/cancel")
     public ResponseEntity<?> cancelPayment(
-            @RequestParam String reference,
-            @RequestParam String cancelDescription,
+            @RequestBody CancelPaymentRequest cancelPaymentRequest,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            log.info("Recibida solicitud de cancelación de pago para reference: {}", reference);
+            log.info("Recibida solicitud de cancelación de pago para reference: {}", cancelPaymentRequest.getReference());
             
             String userId = extractAndValidateToken(authHeader, null);
             if (userId == null) {
                 return buildUnauthorizedResponse();
             }
             
-            var response = paymentService.cancelPayment(reference, cancelDescription);
+            var response = paymentService.cancelPayment(cancelPaymentRequest.getReference(), cancelPaymentRequest.getUpdateDescription());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
             
         } catch (Exception e) {
