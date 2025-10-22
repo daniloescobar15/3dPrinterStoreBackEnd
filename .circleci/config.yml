@@ -1,0 +1,115 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+version: 2.1
+
+# Define a job to be invoked later in a workflow.
+jobs:
+  build-and-test:
+    machine:
+      image: ubuntu-2404:2024.05.1
+    resource_class: medium
+    steps:
+      - checkout
+      
+      - run:
+          name: "Install Java 21"
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y openjdk-21-jdk-headless maven
+            java -version
+            mvn -version
+            
+      - run:
+          name: "Build with Maven"
+          command: mvn clean package
+          
+      - run:
+          name: "Run Unit Tests"
+          command: mvn test
+          
+      - run:
+          name: "Run Integration Tests"
+          command: mvn verify
+          
+      - store_test_results:
+          path: target/surefire-reports
+          
+      - store_artifacts:
+          path: target/puntored-adapter-1.0.0.jar
+          destination: app.jar
+
+  build-docker-image:
+    machine:
+      image: ubuntu-2404:2024.05.1
+    resource_class: medium
+    steps:
+      - checkout
+      
+      - run:
+          name: "Build Docker Image"
+          command: |
+            docker build -t puntored-adapter:${CIRCLE_SHA1:0:7} .
+            docker tag puntored-adapter:${CIRCLE_SHA1:0:7} puntored-adapter:latest
+            
+
+  deploy-to-production:
+    machine:
+      image: ubuntu-2404:2024.05.1
+    resource_class: medium
+    steps:
+      - checkout
+      
+      - run:
+          name: "Install sshpass"
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y sshpass
+            
+      - run:
+          name: "Build and Deploy Docker Image"
+          command: |
+            # Build Docker image
+            docker build -t puntored-adapter:${CIRCLE_SHA1:0:7} .
+            
+            # Save image to tar
+            docker save puntored-adapter:${CIRCLE_SHA1:0:7} -o /tmp/puntored-adapter.tar
+            
+            # Transfer to server using sshpass
+            sshpass -p "$SSH_PASS" scp -o StrictHostKeyChecking=no \
+                -P 22 \
+                /tmp/puntored-adapter.tar \
+                root@158.220.99.85:/tmp/
+            
+            # Deploy on server using sshpass
+            export IMAGE_TAG=${CIRCLE_SHA1:0:7}
+            sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no \
+                -p 22 \
+                root@158.220.99.85 bash -c "
+            docker load -i /tmp/puntored-adapter.tar
+            docker stop puntored-adapter || true
+            docker rm puntored-adapter || true
+            docker run -d \
+              --name puntored-adapter \
+              -p 9000:9000 \
+              --restart unless-stopped \
+              puntored-adapter:${IMAGE_TAG}
+            sleep 5
+            echo 'Deployment successful!'
+            "
+
+# Orchestrate jobs using workflows
+workflows:
+  build-and-deploy:
+    jobs:
+      - build-and-test
+      - build-docker-image:
+          requires:
+            - build-and-test
+      - deploy-to-production:
+          requires:
+            - build-docker-image
+          filters:
+            branches:
+              only:
+                - main
+                - master
+                - develop
