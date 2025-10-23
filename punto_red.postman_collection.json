@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "79ddb255-89f0-475e-a21d-e5e2dfa12701",
+		"name": "punto red danilo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11299819"
+	},
+	"item": [
+		{
+			"name": "autenticacion app fusion Auth",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Lb3Ouo5CGfIJjevorClMq7Kc0l3lBjEZ_Ii3c-hJiLP5AEQPDRdw7TWy"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"applicationId\": \"5359f6f6-42ef-43a5-a840-29d0e8b961fa\",\n    \"loginId\": \"test@test.com\",\n    \"password\": \"admin123\",\n    \"metaData\": {\n      \"device\": { \"description\": \"web\" }\n    }\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://158.220.99.85:9011/api/login",
+					"protocol": "http",
+					"host": [
+						"158",
+						"220",
+						"99",
+						"85"
+					],
+					"port": "9011",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crear pago backend",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Imdkc0NjOWY3cGdTeFlNWUFjbnJzdE45eDh0cyJ9.eyJhdWQiOiI1MzU5ZjZmNi00MmVmLTQzYTUtYTg0MC0yOWQwZThiOTYxZmEiLCJleHAiOjE3NjExNTQ5MjQsImlhdCI6MTc2MTE1MTMyNCwiaXNzIjoiMTU4LjIyMC45OS44NTo5MDExIiwic3ViIjoiYTMwMDc1ZjktYzJmZS00ZGMzLWJmZDYtM2FiOTlhOTEzMjNiIiwianRpIjoiY2Q1MmExNjctOTAxYS00YTJmLTk1ODUtZmJmNmMwMjI3ODVmIiwiYXV0aGVudGljYXRpb25UeXBlIjoiUEFTU1dPUkQiLCJ0dHkiOiJhdCIsImFwcGxpY2F0aW9uSWQiOiI1MzU5ZjZmNi00MmVmLTQzYTUtYTg0MC0yOWQwZThiOTYxZmEiLCJyb2xlcyI6W10sImF1dGhfdGltZSI6MTc2MTE1MTMyNCwidGlkIjoiMDVmY2FmOGYtMGEyNS1kMTI4LTY3MzYtZmYyNzQxYjEzYTBlIn0.Bc57RtvdjUNi7vXgxl8-F16drRYWsJixo0p0uY-qK9Y6A_Umn7u-x2t8RfZp3ComIr4gkS7Qtdrv3fCbNPwMyAKT8k4SjM31EaFSrZ-1UW0SyfDTmIVVO8mLlsuNG-tK7F-MMiCH5Iw6AoSuKWciehVLS5Y3J3rAmqXll5YrtWFw19iFmNG-4z-CCOo8d6o5VhIyiA5aOmUqMHMXQeGXq9dzUl3nPNeAoVSvDoh26KAjYlgDG5IFUpIchBvorZV2pOaFq-MgqDdtyrydfUS_JK99M_Aa1hjbTOoHINg8HaI7A5vrpnXFR3ePYvUcKlewvzmZFeUX5jtVtJO_9FPtPQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"externalId\": \"EXT-123-453\",\n    \"amount\": 150.50,\n    \"description\": \"Pago de servicios\",\n    \"dueDate\": \"2025-12-31 23:59:00\",\n    \"callbackURL\": \"https://testdispute.free.beeceptor.com\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/api/payment/process",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"payment",
+						"process"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:9000/api/payment/process \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"externalId\": \"EXT-123-456\",\n    \"amount\": 150.50,\n    \"description\": \"Pago de servicios\",\n    \"dueDate\": \"2025-12-31 23:59:00\",\n    \"callbackURL\": \"https://localhost:8080/payment-callback\"\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "autenticar backend",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"loginId\": \"test@test.com\",\n  \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://158.220.99.85:9000/api/login",
+					"protocol": "http",
+					"host": [
+						"158",
+						"220",
+						"99",
+						"85"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://localhost:9000/api/auth/login' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"loginId\": \"test@test.com\",\n  \"password\": \"admin123\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "listar pagos backend",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Imdkc0NjOWY3cGdTeFlNWUFjbnJzdE45eDh0cyJ9.eyJhdWQiOiI1MzU5ZjZmNi00MmVmLTQzYTUtYTg0MC0yOWQwZThiOTYxZmEiLCJleHAiOjE3NjEyNDA1NDYsImlhdCI6MTc2MTIzNjk0NiwiaXNzIjoiMTU4LjIyMC45OS44NTo5MDExIiwic3ViIjoiYTMwMDc1ZjktYzJmZS00ZGMzLWJmZDYtM2FiOTlhOTEzMjNiIiwianRpIjoiYjEzNDRhYmYtODdmNS00OTc0LWJmNzQtMjUwMDIxNWY3ZGM5IiwiYXV0aGVudGljYXRpb25UeXBlIjoiUEFTU1dPUkQiLCJ0dHkiOiJhdCIsImFwcGxpY2F0aW9uSWQiOiI1MzU5ZjZmNi00MmVmLTQzYTUtYTg0MC0yOWQwZThiOTYxZmEiLCJyb2xlcyI6W10sImF1dGhfdGltZSI6MTc2MTIzNjk0NiwidGlkIjoiMDVmY2FmOGYtMGEyNS1kMTI4LTY3MzYtZmYyNzQxYjEzYTBlIn0.joCM4a0AH7kuOtjAOVTFQjiKJllEcigTOSEF4BvIT4MIZ-DuxBw3zQxkIZhUZXUt2_nmJerogHvhChbBuYFnqUAUQVxcXOQkPdEGr10SNobWs_HXBa7dCXzBxXVWnldCNEbehWQ7dokY82JFlqwrTwAGbAUs3Gk-PTaizDaok-iDf-LxzPkhfQqE8fa5XSOZ6xAfQZZ-vP3RNU4NldSZWQp9_GLPVwLE2g7NVwrkqn3z9Lr-IWnDhJL6cx9iHf4u9SWuKKgb7XDrgAVIELOqWP-oeNZnpWUrrPsbL27HuL9E40Q6KRfdFeA6uBLeFu79AVoKqtXq9yUxxf10v0Boww"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://158.220.99.85:9000/api/payment/list",
+					"protocol": "http",
+					"host": [
+						"158",
+						"220",
+						"99",
+						"85"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"payment",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "llamado callback",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentId\": 1176,\n    \"externalId\": \"EXT-123-453\",\n    \"amount\": 150.5,\n    \"authorizationNumber\": \"526232\",\n    \"reference\": \"PRV12510217A00FB09D52975E58231\",\n    \"paymentDate\": 1760918400005,\n    \"status\": \"02\",\n    \"message\": \"Payment processed successfully\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://158.220.99.85:9000/api/payment/callback",
+					"protocol": "http",
+					"host": [
+						"158",
+						"220",
+						"99",
+						"85"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"payment",
+						"callback"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST \"http://localhost:8080/payment/callback\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"paymentId\": 1176,\n    \"externalId\": \"EXT-123-453\",\n    \"amount\": 150.5,\n    \"authorizationNumber\": \"526232\",\n    \"reference\": \"PRV12510197562FAE3B65A12A7C504\",\n    \"paymentDate\": 1760918400005,\n    \"status\": \"02\",\n    \"message\": \"Payment processed successfully\"\n  }'\n"
+			},
+			"response": []
+		},
+		{
+			"name": "llamado a cancelar pago",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Imdkc0NjOWY3cGdTeFlNWUFjbnJzdE45eDh0cyJ9.eyJhdWQiOiI1MzU5ZjZmNi00MmVmLTQzYTUtYTg0MC0yOWQwZThiOTYxZmEiLCJleHAiOjE3NjExNTQ5MjQsImlhdCI6MTc2MTE1MTMyNCwiaXNzIjoiMTU4LjIyMC45OS44NTo5MDExIiwic3ViIjoiYTMwMDc1ZjktYzJmZS00ZGMzLWJmZDYtM2FiOTlhOTEzMjNiIiwianRpIjoiY2Q1MmExNjctOTAxYS00YTJmLTk1ODUtZmJmNmMwMjI3ODVmIiwiYXV0aGVudGljYXRpb25UeXBlIjoiUEFTU1dPUkQiLCJ0dHkiOiJhdCIsImFwcGxpY2F0aW9uSWQiOiI1MzU5ZjZmNi00MmVmLTQzYTUtYTg0MC0yOWQwZThiOTYxZmEiLCJyb2xlcyI6W10sImF1dGhfdGltZSI6MTc2MTE1MTMyNCwidGlkIjoiMDVmY2FmOGYtMGEyNS1kMTI4LTY3MzYtZmYyNzQxYjEzYTBlIn0.Bc57RtvdjUNi7vXgxl8-F16drRYWsJixo0p0uY-qK9Y6A_Umn7u-x2t8RfZp3ComIr4gkS7Qtdrv3fCbNPwMyAKT8k4SjM31EaFSrZ-1UW0SyfDTmIVVO8mLlsuNG-tK7F-MMiCH5Iw6AoSuKWciehVLS5Y3J3rAmqXll5YrtWFw19iFmNG-4z-CCOo8d6o5VhIyiA5aOmUqMHMXQeGXq9dzUl3nPNeAoVSvDoh26KAjYlgDG5IFUpIchBvorZV2pOaFq-MgqDdtyrydfUS_JK99M_Aa1hjbTOoHINg8HaI7A5vrpnXFR3ePYvUcKlewvzmZFeUX5jtVtJO_9FPtPQ"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"reference\": \"PRV1251022B286B33FC4E3488D8CAD\",\n    \"updateDescription\": \"ación usuario\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://158.220.99.85:9000/api/payment/cancel",
+					"protocol": "http",
+					"host": [
+						"158",
+						"220",
+						"99",
+						"85"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"payment",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

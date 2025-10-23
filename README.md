@@ -311,14 +311,24 @@ El backend proporciona endpoints de API REST servidos en la ruta de contexto `/a
 - **Desarrollo Local**: `http://localhost:9000/api`
 - **Producción**: `http://158.220.99.85/api`
 
+### 📮 Collection de Postman
+
+Para facilitar las pruebas de los endpoints, se proporciona una **collection completa de Postman** con todos los endpoints implementados:
+
+📁 **Archivo**: `punto_red.postman_collection.json`
+
+**Cómo importar en Postman:**
+1. Abre Postman
+2. Click en `Import` → Selecciona `punto_red.postman_collection.json`
+3. Todos los endpoints con variables de entorno estarán disponibles
+4. Reemplaza las variables de entorno con tus valores (tokens, URLs, etc.)
+
 ### Características Clave
 - ✅ Autenticación basada en JWT vía FusionAuth
 - ✅ Diseño de API RESTful
 - ✅ Manejo integral de errores
 - ✅ Validación de solicitudes/respuestas
 - ✅ Persistencia de datos con JPA
-
-> Para documentación detallada de API, consulta la documentación de API o especificación Swagger/OpenAPI (si está disponible).
 
 ---
 
