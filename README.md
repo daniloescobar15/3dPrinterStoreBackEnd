@@ -154,17 +154,17 @@ La solución completa está compuesta por múltiples capas que se comunican de m
 
 ![img_5.png](img_5.png)
 
-Para desacoplar los componentes de arquitectura y desacoplar la logica de pagos usando el patron adapter para poder tener mas proveedores de pagos, se recomienda implementar un patrón de microservicios, por lo que los componentes que deberian estar en la arquitectura son los siguientes:
+Para desacoplar la lógica de pagos e implementar el patrón adapter, permitiendo múltiples proveedores de pagos, se recomienda una arquitectura de microservicios con los siguientes componentes:
 - **Frontend**: Angular 
-- **Gateway**: Spring Boot, donde se hacen las validaciones de seguridad y se integran los diferentes sistemas
-- **FutionAuth server**: FutionAuth, servicio para la autenticacion y autorizacion de usuarios
-- **Payments-engine**: Spring Boot, para desacoplar la logica de pagos
-- **Base de Datos de pagos**: MySQL: Se usuario unicamente para la logica de pagos
-- **Product-engine**: Spring Boot, para desacoplar la logica de pagos
-- **Base de Datos de productos**: MySQL: Se usuario unicamente para la logica de productos
-- **API de Punto Red** api de integracion con punto red
-- **Adaptador de punto red** para integrar la logica de pago con punto red
-- **Redis** para el manejo del cache de tokens de punto-red
+- **Gateway**: Spring Boot, donde se realizan las validaciones de seguridad y se integran los diferentes sistemas
+- **FusionAuth Server**: FusionAuth, servicio para la autenticación y autorización de usuarios
+- **Payments-engine**: Spring Boot, para desacoplar la lógica de pagos
+- **Base de Datos de Pagos**: MySQL, utilizada únicamente para la lógica de pagos
+- **Product-engine**: Spring Boot, para desacoplar la lógica de productos
+- **Base de Datos de Productos**: MySQL, utilizada únicamente para la lógica de productos
+- **API de Punto Red**: Servicio de integración con Punto Red
+- **Adaptador de Punto Red**: Implementación del patrón adapter para integrar la lógica de pago con Punto Red
+- **Redis**: Gestión de caché para tokens de Punto Red
 
 
 ### Estructura del Proyecto
