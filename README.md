@@ -4,7 +4,19 @@ Servicio backend para la aplicación de Tienda de Impresoras 3D - una solución 
 
 ## 📋 Descripción General
 
-**Backend de Tienda de Impresoras 3D** es una aplicación Spring Boot robusta construida siguiendo los principios de **Arquitectura Hexagonal**. Actúa como la capa de lógica empresarial central para el [Frontend de Tienda de Impresoras 3D](https://github.com/yourusername/3dprinterstorefront), manejando todas las operaciones backend, gestión de datos e integraciones con servicios externos.
+### 🎯 Contexto: Prueba Técnica para Punto Red
+
+**Backend de Tienda de Impresoras 3D** es una aplicación Spring Boot desarrollada como **solución de prueba técnica para el proceso de selección en Punto Red**. Este proyecto demuestra las capacidades en diseño arquitectónico y  desarrollo backend.
+
+**Características Principales del Proyecto:**
+- Implementación de **Arquitectura Hexagonal** (Puertos y Adaptadores) para máxima flexibilidad y testabilidad
+- API RESTful segura con autenticación JWT integrada
+- Pipeline CI/CD completamente automatizado con CircleCI
+- Integración con la API de Punto Red para gestión de precios y productos
+- Despliegue en producción con Docker y orquestación automática
+- Suite completa de pruebas unitarias e integración
+
+Este servicio actúa como la capa de lógica empresarial central para el [Frontend de Tienda de Impresoras 3D](https://github.com/yourusername/3dprinterstorefront), manejando todas las operaciones backend, gestión de datos e integraciones con servicios externos.
 
 ### Estado
 🚀 **Despliegue en Producción**: http://158.220.99.85/  
@@ -17,7 +29,6 @@ El proyecto cuenta con un pipeline de **integración continua y despliegue conti
 - **Trigger**: Se activa automáticamente con cada push a las ramas `main`, `master` o `develop`
 - **Compilación**: Automatizada en cada commit
 - **🧪 Pruebas Unitarias**: Ejecutadas con JUnit 5 en cada commit
-- **🧪 Pruebas de Integración**: Validación de componentes integrados
 - **Construcción Docker**: Imagen generada automáticamente (solo si pruebas pasan ✅)
 - **Despliegue Automático**: Deployment a producción en `http://158.220.99.85` (solo si todo está bien)
 - **Archivo de Configuración**: `.circleci/config.yml`
@@ -28,6 +39,92 @@ El proyecto cuenta con un pipeline de **integración continua y despliegue conti
 ## 🏗️ Arquitectura
 
 Este proyecto implementa **Arquitectura Hexagonal** (Puertos y Adaptadores), asegurando una separación clara de responsabilidades e independencia de frameworks externos.
+
+### 🔄 Diagrama de Arquitectura a Alto Nivel
+
+La solución completa está compuesta por múltiples capas que se comunican de manera segura y eficiente:
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                      🖥️  CAPA DE PRESENTACIÓN                                ║
+║                   Frontend (React/Angular/Vue)                               ║
+║              https://github.com/daniloescobar15/3dPrinterStoreFront          ║
+╚════════════════════════════════════╤════════════════════════════════════════╝
+                                     │
+                        ┌─────────────────────────────┐
+                        │  HTTP/REST (API RESTful)    │
+                        │  Autenticado con JWT        │
+                        └─────────────────────────────┘
+                                     │
+                                     ▼
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                       🚀 BACKEND - SPRING BOOT                               ║
+║                   🐳 Docker: 3dprinterstorebackend:latest   
+║                   Puerto: 9000 | Contexto: /api                              ║
+╠═══════════════════════════════════════════════════════════════════════════════╣
+║ ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║ │         🔄 REST CONTROLLERS & ENDPOINTS                                 │ ║
+║ │   GET/POST/PUT/DELETE → /api/productos, /api/usuarios, /api/pedidos   │ ║
+║ └──────────────────────────────┬──────────────────────────────────────────┘ ║
+║                                │                                             ║
+║ ┌──────────────────────────────▼──────────────────────────────────────────┐ ║
+║ │ 🛡️  CAPA DE SEGURIDAD - JWT/OAuth2 Validation & Authorization          │ ║
+║ │    (Valida tokens contra FusionAuth JWKS)                              │ ║
+║ └──────────────────────────────┬──────────────────────────────────────────┘ ║
+║                                │                                             ║
+║ ┌──────────────────────────────▼──────────────────────────────────────────┐ ║
+║ │ ⚙️  CAPA DE APLICACIÓN                                                  │ ║
+║ │    (Orquestación de Casos de Uso)                                      │ ║
+║ └──────────────────────────────┬──────────────────────────────────────────┘ ║
+║                                │                                             ║
+║ ┌──────────────────────────────▼──────────────────────────────────────────┐ ║
+║ │ 🎯 CAPA DE DOMINIO                                                      │ ║
+║ │    (Reglas de Negocio & Lógica Empresarial - Independiente de Frameworks)║
+║ └──────────────────────────────┬──────────────────────────────────────────┘ ║
+║                                │                                             ║
+║ ┌──────────────────────────────▼──────────────────────────────────────────┐ ║
+║ │ 🔌 ADAPTADORES / PUERTOS                                                │ ║
+║ │    (Implementaciones de Interfaces)                                      │ ║
+║ └──────────────────────────────┬──────────────────────────────────────────┘ ║
+║                                │                                             ║
+╚════════════════════════════════╤════════════════════════════════════════════╝
+                                 │
+                ┌────────────────┼────────────────┐
+                │                │                │
+                ▼                ▼                ▼
+        ╔═══════════════╗  ╔═══════════════╗  ╔════════════════╗
+        ║ 🔐 AUTENTICACIÓN║  ║ 💾 BASE DATOS ║  ║ 📡 API EXTERNA║
+        ╠═══════════════╣  ╠═══════════════╣  ╠════════════════╣
+        ║ FusionAuth    ║  ║ MySQL 8.0+   ║  ║ Punto Red     ║
+        ║ :9011         ║  ║ :3306         ║  ║ Sandbox v1    ║
+        ║               ║  ║               ║  ║               ║
+        ║ ✓ Usuarios    ║  ║ ✓ Productos  ║  ║ ✓ Precios     ║
+        ║ ✓ JWT/OAuth2  ║  ║ ✓ Usuarios   ║  ║ ✓ Catálogo    ║
+        ║ ✓ JWKS        ║  ║ ✓ Pedidos    ║  ║ ✓ Integración ║
+        ║ ✓ MFA/RBAC    ║  ║ ✓ BD: punto_ ║  ║ B2B           ║
+        ║               ║  ║   red         ║  ║               ║
+        ╚═══════════════╝  ╚═══════════════╝  ╚════════════════╝
+```
+
+#### 📊 Flujo de Datos de la Solución
+
+1. **Frontend → Backend**: El frontend envía peticiones HTTP REST autenticadas con JWT
+2. **Validación**: El backend valida el JWT contra FusionAuth (JWKS)
+3. **Procesamiento**: La lógica de negocio procesa la solicitud en capas
+4. **Persistencia**: Los datos se guardan/recuperan de MySQL
+5. **Integraciones**: El backend obtiene datos de terceros (API Punto Red) cuando es necesario
+6. **Respuesta**: El backend devuelve datos al frontend
+
+#### 🔌 Puertos y Adaptadores - Conexiones Externas
+
+| Componente | Dirección | Protocolo | Propósito |
+|-----------|-----------|-----------|----------|
+| **Frontend** | → Backend | HTTP/REST | Peticiones de usuario |
+| **Backend** | ← Frontend | HTTP/REST | Respuestas de API |
+| **Backend** | ↔ FusionAuth | HTTPS | Validación de tokens JWT |
+| **Backend** | ↔ MySQL | JDBC | Persistencia de datos |
+| **Backend** | → API Punto Red | HTTPS | Datos de productos/precios |
+| **Docker** | - | - | Despliegue y orquestación |
 
 ### Capas de la Arquitectura
 
@@ -73,16 +170,45 @@ src/main/resources/
 ## 🔗 Integración de Sistemas
 
 ### Conexión con el Frontend
-- **Repositorio**: [Frontend de Tienda de Impresoras 3D](https://github.com/yourusername/3dprinterstorefront)
+- **Repositorio**: [Frontend de Tienda de Impresoras 3D](https://github.com/daniloescobar15/3dPrinterStoreFront)
 - **Endpoint de API**: `http://158.220.99.85/api`
 - **Ruta de Contexto**: `/api`
 - **Puerto del Servidor**: `9000`
 
 ### Servicio de Autenticación (FusionAuth)
-- **URL del Servicio**: `http://158.220.99.85:9011`
-- **Propósito**: Validación de tokens OAuth2 / JWT y autenticación de usuarios
-- **Endpoint JWKS**: `http://158.220.99.85:9011/.well-known/jwks.json`
-- **Características**: Autenticación segura, validación de tokens, gestión de usuarios
+
+**URL del Servicio**: `http://158.220.99.85:9011`
+
+#### 🔐 Ventajas de FusionAuth como Solución de Autenticación
+![img_1.png](img_1.png)
+FusionAuth ha sido seleccionado como servicio de autenticación por ofrecer una solución profesional, robusta y altamente configurable:
+
+**✅ Administración Centralizada de Usuarios:**
+- Panel de administración intuitivo para gestionar usuarios, roles y permisos
+- Autenticación multi-factor (MFA) disponible
+- Gestión de sesiones de usuario con políticas configurables
+- Auditoría y trazabilidad completa de acciones de usuarios
+
+**🔑 Métodos de Obtención de Tokens:**
+- **OAuth 2.0**: Protocolo estándar de industria para autorización delegada
+- **Flujo de autorización seguro** con code exchange
+- Generación automática de tokens JWT con validez configurable
+- Soporte para múltiples aplicaciones dentro de la misma instancia
+- Tokens con información de usuario, roles y permisos embebida
+
+**✔️ Verificación Segura de Tokens:**
+- **Endpoint JWKS** (`http://158.220.99.85:9011/.well-known/jwks.json`): Público y seguro para obtener claves criptográficas
+- Validación de tokens mediante firma digital (RSA/ECDSA)
+- Verificación de expiración y emisor del token
+- Soporte para validación sincrónica sin llamadas externas (después de cachear claves)
+- Cumplimiento con estándares OpenID Connect (OIDC)
+
+**🛡️ Seguridad y Confiabilidad:**
+- Encriptación end-to-end de credenciales
+- Cumplimiento con estándares de seguridad OWASP
+- Protección contra ataques comunes (CSRF, XSS, etc.)
+- Renovación de tokens con refresh tokens seguros
+- Segregación completa de autenticación del backend de negocio
 
 ### Base de Datos
 - **Tipo**: MySQL 8.0+
@@ -235,47 +361,6 @@ docker run -d \
 
 Consulta `.dockerignore` para los archivos excluidos durante las compilaciones de Docker.
 
----
-
-## 📋 Estructura del Archivo de Configuración
-
-### Secciones Clave de `application.yaml`
-
-```yaml
-# Metadatos de la Aplicación
-spring:
-  application:
-    name: punto-red-backend
-  
-  # Configuración de Base de Datos
-  datasource:
-    url: jdbc:mysql://158.220.99.85:3306/punto_red
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  
-  # Configuración de JPA/Hibernate
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-
-# Configuración del Servidor
-server:
-  port: 9000
-  servlet:
-    context-path: /api
-
-# Servicios Externos
-punto-red:
-  webclient:
-    url: https://sandbox-v1.portalventas.net
-    connectTimeOut: 10
-    readTimeOut: 30
-
-fusion-auth:
-  jwks-url: http://158.220.99.85:9011/.well-known/jwks.json
-```
 
 ---
 
@@ -481,16 +566,14 @@ docker run -d --name puntored-adapter -p 9000:9000 --restart unless-stopped punt
 ### Screenshots del Pipeline CircleCI
 
 > 📸 **Capturas de pantalla del pipeline en CircleCI**:
+![img_2.png](img_2.png)> 
 > 
-> Aquí irán los screenshots mostrando:
-> - Vista general del workflow
-> - Jobs exitosos
-> - Tiempos de ejecución
-> - Histórico de despliegues
+> ![img_3.png](img_3.png)
+
 
 ---
 
-## 📞 Soporte y Conexiones
+##  Conexiones
 
 ### Principios de Arquitectura
 - ✅ **Arquitectura Hexagonal**: Separación limpia entre lógica empresarial y preocupaciones externas
@@ -506,23 +589,4 @@ docker run -d --name puntored-adapter -p 9000:9000 --restart unless-stopped punt
 | API de Punto Red | `https://sandbox-v1.portalventas.net` | Datos de Productos y Precios |
 | Frontend | Dinámico | Interfaz de Usuario e Interacciones |
 
----
-
-## 📝 Licencia
-
-[Tu Licencia Aquí]
-
-## 👥 Colaboradores
-
-- Equipo de Desarrollo @ PuntoRed
-
-## 📬 Contacto
-
-Para preguntas o problemas, contacta al equipo de desarrollo o abre una incidencia en el repositorio.
-
----
-
-**Última Actualización**: 2025  
-**Versión del Proyecto**: 1.0.0  
-**Versión de Java**: 21  
-**Versión de Spring Boot**: 3.3.5
+-
