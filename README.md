@@ -340,14 +340,14 @@ El backend proporciona endpoints de API REST servidos en la ruta de contexto `/a
 
 ## 📦 Despliegue en Docker
 
-El proyecto incluye soporte Docker para despliegue en contenedores.
-
+El proyecto incluye soporte Docker para despliegue en contenedores. en el servidor vps 158.220.99.85
+![img_4.png](img_4.png)
 ### Compilar Imagen Docker
 ```bash
 mvn spring-boot:build-image
 ```
 
-Esto crea una imagen llamada `3dprinterstorebackend:1.0.0`
+Esto crea una imagen llamada `puntored-adapter:1.0.0`
 
 ### Ejecutar Contenedor
 ```bash
