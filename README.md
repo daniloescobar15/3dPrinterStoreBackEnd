@@ -16,7 +16,7 @@ Servicio backend para la aplicación de Tienda de Impresoras 3D - una solución 
 - Despliegue en producción con Docker y orquestación automática
 - Suite completa de pruebas unitarias e integración
 
-Este servicio actúa como la capa de lógica empresarial central para el [Frontend de Tienda de Impresoras 3D](https://github.com/yourusername/3dprinterstorefront), manejando todas las operaciones backend, gestión de datos e integraciones con servicios externos.
+Este servicio actúa como la capa de lógica empresarial central para el [Frontend de Tienda de Impresoras 3D](https://github.com/daniloescobar15/3dPrinterStoreFront), manejando todas las operaciones backend, gestión de datos e integraciones con servicios externos.
 
 ### Estado
 🚀 **Despliegue en Producción**: http://158.220.99.85/  
@@ -162,7 +162,6 @@ Para desacoplar la lógica de pagos e implementar el patrón adapter, permitiend
 - **Base de Datos de Pagos**: MySQL, utilizada únicamente para la lógica de pagos
 - **Product-engine**: Spring Boot, para desacoplar la lógica de productos
 - **Base de Datos de Productos**: MySQL, utilizada únicamente para la lógica de productos
-- **API de Punto Red**: Servicio de integración con Punto Red
 - **Adaptador de Punto Red**: Implementación del patrón adapter para integrar la lógica de pago con Punto Red
 - **Redis**: Gestión de caché para tokens de Punto Red
 
@@ -236,7 +235,7 @@ FusionAuth ha sido seleccionado como servicio de autenticación por ofrecer una 
 - **Estrategia DDL**: `update` (actualizaciones automáticas de esquema)
 
 ### Integraciones Externas
-- **API de Punto Red**: Integración con portal Punto Red para datos de precios y productos
+- **API de Punto Red**: Integración con portal Punto Red para generar referencias de pago, cancelaciones y callback
   - URL Base: `https://sandbox-v1.portalventas.net`
   - Endpoint de Precios: `/v1/pricing`
   - Autenticación: Basada en Usuario/Contraseña
@@ -564,28 +563,6 @@ Configuradas en CircleCI Project Settings:
 2. Selecciona el proyecto `3dprinterstorebackend`
 3. Observa el pipeline en tiempo real
 4. Revisa logs de cada job si es necesario
-
-### Pasos Manuales de Despliegue (Alternativa)
-
-Si necesitas desplegar manualmente sin CI/CD:
-
-```bash
-# 1. Compilar
-mvn clean package
-
-# 2. Construir imagen Docker
-docker build -t puntored-adapter:1.0.0 .
-
-# 3. Transferir imagen
-docker save puntored-adapter:1.0.0 -o puntored-adapter.tar
-scp -P 22 puntored-adapter.tar root@158.220.99.85:/tmp/
-
-# 4. Ejecutar en servidor remoto
-ssh root@158.220.99.85
-docker load -i /tmp/puntored-adapter.tar
-docker stop puntored-adapter || true
-docker run -d --name puntored-adapter -p 9000:9000 --restart unless-stopped puntored-adapter:1.0.0
-```
 
 ---
 
